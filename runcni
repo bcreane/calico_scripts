@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# script to start a calico/node image
+# script to run a calico/node image
 
 # Check if there's already a calico/node container running, bail if so
 cnc=`docker ps --filter "name=calico-node" --quiet`
@@ -9,7 +9,7 @@ if [ ${#cnc} -gt 0 ]; then
 	exit 1
 fi
 
-# Make sure there's a calico/node:latest image that we can start, bail if not
+# Make sure there's a calico/node:latest image that we can run, bail if not
 calico_node_image=`docker images "calico/node:latest" --quiet`
 if [ ${#calico_node_image} -eq 0 ]; then
 	echo There is no calico/node image!
@@ -20,7 +20,7 @@ fi
 loglevel=debug
 ETCD_ENDPOINTS=http://127.0.0.1:2379
 
-echo Starting calico/node image id: ${calico_node_image}
+echo Running calico/node image id: ${calico_node_image}
 docker run --net=host --privileged --name=calico-node -d --restart=always \
 	-e NO_DEFAULT_POOLS= \
        	-e CALICO_STARTUP_LOGLEVEL=${loglevel} \
