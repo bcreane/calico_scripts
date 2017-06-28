@@ -1,0 +1,10 @@
+#!/bin/bash
+
+container_id=`cnc`
+
+if [ ${#container_id} -eq 0 ]; then
+	echo No calico-node container is running
+else
+	docker logs ${container_id}
+fi
+
