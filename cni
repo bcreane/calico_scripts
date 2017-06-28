@@ -1,0 +1,10 @@
+#!/bin/bash
+
+cni=`docker images "calico/node:latest" --quiet`		# calico-node image
+
+if [ ${#cni} -eq 0 ]; then
+	echo No calico/node:latest image
+else
+	echo Calico/node:latest: ${cni}
+fi
+

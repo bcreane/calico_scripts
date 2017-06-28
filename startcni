@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# script to start a calico/node image
+
+# Check if there's already a calico/node container running, bail if so
+cnc=`docker ps --filter "name=calico-node" --quiet`
+if [ ${#cnc} -gt 0 ]; then
+	echo There is already a running calico/node container: ${cnc}
+	exit 1
+fi
+
+# Make sure there's a calico/node:latest image that we can start, bail if not
+calico_node_image=`docker images "calico/node:latest" --quiet`
+if [ ${#calico_node_image} -eq 0 ]; then
+	echo There is no calico/node image!
+	exit 1
+fi
+
+
+loglevel=debug
+ETCD_ENDPOINTS=http://127.0.0.1:2379
+
+echo Starting calico/node image id: ${calico_node_image}
+docker run --net=host --privileged --name=calico-node -d --restart=always \
+	-e NO_DEFAULT_POOLS= \
+       	-e CALICO_STARTUP_LOGLEVEL=${loglevel} \
+       	-e CALICO_LIBNETWORK_ENABLED=true \
+       	-e IP_AUTODETECTION_METHOD=first-found \
+       	-e IP6_AUTODETECTION_METHOD=first-found \
+       	-e CALICO_LIBNETWORK_LABEL_ENDPOINTS=false \
+       	-e NODENAME=bcreane-vm-dev \
+       	-e CALICO_LIBNETWORK_CREATE_PROFILES=true \
+       	-e CALICO_LIBNETWORK_IFPREFIX=cali \
+       	-e ETCD_ENDPOINTS=http://127.0.0.1:2379 \
+       	-e CALICO_NETWORKING_BACKEND=bird \
+	-v /var/log/calico:/var/log/calico \
+       	-v /var/run/calico:/var/run/calico \
+       	-v /lib/modules:/lib/modules \
+       	-v /run/docker/plugins:/run/docker/plugins \
+       	-v /var/run/docker.sock:/var/run/docker.sock \
+	${calico_node_image}
+
+docker ps
+

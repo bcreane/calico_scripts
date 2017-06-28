@@ -1,0 +1,12 @@
+#!/bin/bash
+
+cnc=`docker ps --filter "name=calico-node" --quiet`
+
+if [ ${#cnc} -eq 0 ]; then
+	echo No calico-node container running
+	exit 1
+fi
+
+docker stop $cnc
+docker rm $cnc
+
