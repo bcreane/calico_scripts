@@ -1,10 +1,34 @@
 #!/bin/bash
 
+OPTIND=1         # Reset in case getopts has been used previously in the shell.
+verbose=0
+
+while getopts "h?v" opt; do
+    case "$opt" in
+    h|\?)
+	echo $0 [-v]
+        exit 0
+        ;;
+    v)  verbose=1
+        ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+[ "$1" = "--" ] && shift
+
 cni=`docker images "calico/node:latest" --quiet`		# calico-node image
 
-if [ ${#cni} -eq 0 ]; then
-	echo No calico/node:latest image
+if [ ${verbose} -eq 1 ]; then
+	if [ ${#cni} -eq 0 ]; then
+		echo No calico/node:latest image
+	else
+		echo Calico/node:latest: ${cni}
+	fi
 else
-	echo Calico/node:latest: ${cni}
+	if [ ${#cni} -ne 0 ]; then
+		echo ${cni}
+	fi
 fi
 
