@@ -1,0 +1,6 @@
+stopcnc 
+runcni 
+cnc
+docker commit `cnc`
+docker push quay.io/bcreane/calico
+
